@@ -1,5 +1,6 @@
 package com.example.zadania07;
 
+import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.Button;
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         setUpListeners();
         tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
+        setUpCourseSpinner();
+        setUpListeners();
+        tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
     }
 
     private void setUpListeners() {
@@ -73,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
+    }
+    private void setUpCourseSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.courses, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCourse.setAdapter(adapter);
     }
 
     private void showDatePicker() {
@@ -102,11 +112,13 @@ public class MainActivity extends AppCompatActivity {
                 ? getString(R.string.yes_short)
                 : getString(R.string.no_short);
 
+        String course = spCourse.getSelectedItem().toString();
+
         String summary = getString(R.string.summary_format,
                 etName.getText().toString().trim(),
                 etEmail.getText().toString().trim(),
                 birthDate.isEmpty() ? "brak" : birthDate,
-                "brak",                     // kurs jeszcze nieobsługiwany
+                course,
                 mode,
                 sbLevel.getProgress(),
                 newsletter);
