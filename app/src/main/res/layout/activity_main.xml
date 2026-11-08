@@ -18,7 +18,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
 
-        <!-- 1. Spinner – usługa -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp" />
 
-        <!-- 2. Data (Button + TextView) -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +54,6 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <!-- 3. Spinner – godzina -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +64,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp" />
 
-        <!-- 4. EditText – imię -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +75,6 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- 5. EditText – telefon -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,7 +87,7 @@
                 android:inputType="phone" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- 6. RadioGroup – rodzaj wizyty (zależność) -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -116,7 +112,7 @@
                 android:layout_marginStart="16dp" />
         </RadioGroup>
 
-        <!-- Pole zależne – widoczne tylko przy wizycie stacjonarnej -->
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilAddress"
             android:layout_width="match_parent"
