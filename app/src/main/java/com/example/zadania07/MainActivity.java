@@ -1,8 +1,9 @@
 package com.example.zadania07;
 
-import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Patterns;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -48,11 +50,16 @@ public class MainActivity extends AppCompatActivity {
         swNewsletter = findViewById(R.id.swNewsletter);
         cbTerms = findViewById(R.id.cbTerms);
 
-        setUpListeners();
-        tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
         setUpCourseSpinner();
         setUpListeners();
         tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
+    }
+
+    private void setUpCourseSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.courses, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCourse.setAdapter(adapter);
     }
 
     private void setUpListeners() {
@@ -62,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         btnBirthDate.setOnClickListener(v -> showDatePicker());
 
-        btnSubmit.setOnClickListener(v -> showSummary());
+        btnSubmit.setOnClickListener(v -> {
+            if (validateForm()) {
+                showSummary();
+            }
+        });
 
-        // SeekBar – trzy metody → klasa anonimowa
+        // SeekBar – trzy metody → klasa anonimowa (nie da się lambdy)
         sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -77,12 +88,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
-    }
-    private void setUpCourseSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.courses, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCourse.setAdapter(adapter);
     }
 
     private void showDatePicker() {
@@ -103,6 +108,39 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private boolean validateForm() {
+        String name = etName.getText().toString().trim();
+        if (name.isEmpty()) {
+            etName.setError(getString(R.string.error_name));
+            etName.requestFocus();
+            return false;
+        }
+
+        String email = etEmail.getText().toString().trim();
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError(getString(R.string.error_email));
+            etEmail.requestFocus();
+            return false;
+        }
+
+        if (birthDate.isEmpty()) {
+            Toast.makeText(this, R.string.error_date, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (spCourse.getSelectedItemPosition() == 0) {
+            Toast.makeText(this, R.string.error_course, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (rgMode.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, R.string.error_mode, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
     private void showSummary() {
         String mode = rgMode.getCheckedRadioButtonId() == R.id.rbOnsite
                 ? getString(R.string.mode_onsite)
@@ -112,13 +150,11 @@ public class MainActivity extends AppCompatActivity {
                 ? getString(R.string.yes_short)
                 : getString(R.string.no_short);
 
-        String course = spCourse.getSelectedItem().toString();
-
         String summary = getString(R.string.summary_format,
                 etName.getText().toString().trim(),
                 etEmail.getText().toString().trim(),
-                birthDate.isEmpty() ? "brak" : birthDate,
-                course,
+                birthDate,
+                spCourse.getSelectedItem().toString(),
                 mode,
                 sbLevel.getProgress(),
                 newsletter);
