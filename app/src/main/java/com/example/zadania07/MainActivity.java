@@ -2,95 +2,62 @@ package com.example.zadania07;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Patterns;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.materialswitch.MaterialSwitch;
+import com.example.zadania07.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText etName, etEmail;
-    private Button btnBirthDate, btnSubmit;
-    private Spinner spCourse;
-    private RadioGroup rgMode;
-    private SeekBar sbLevel;
-    private TextView tvLevelValue, tvSummary;
-    private MaterialSwitch swNewsletter;
-    private CheckBox cbTerms;
-
-    private String birthDate = "";
+    private ActivityMainBinding binding;
+    private String selectedDate = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        etName = findViewById(R.id.etName);
-        etEmail = findViewById(R.id.etEmail);
-        btnBirthDate = findViewById(R.id.btnBirthDate);
-        btnSubmit = findViewById(R.id.btnSubmit);
-        spCourse = findViewById(R.id.spCourse);
-        rgMode = findViewById(R.id.rgMode);
-        sbLevel = findViewById(R.id.sbLevel);
-        tvLevelValue = findViewById(R.id.tvLevelValue);
-        tvSummary = findViewById(R.id.tvSummary);
-        swNewsletter = findViewById(R.id.swNewsletter);
-        cbTerms = findViewById(R.id.cbTerms);
-
-        setUpCourseSpinner();
-        setUpListeners();
-        tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
+        setupSpinners();
+        setupListeners();
     }
 
-    private void setUpCourseSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.courses, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCourse.setAdapter(adapter);
+
+    private void setupSpinners() {
+        ArrayAdapter<CharSequence> serviceAdapter = ArrayAdapter.createFromResource(
+                this, R.array.services, android.R.layout.simple_spinner_item
+        );
+        serviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerService.setAdapter(serviceAdapter);
+
+        ArrayAdapter<CharSequence> hourAdapter = ArrayAdapter.createFromResource(
+                this, R.array.hours, android.R.layout.simple_spinner_item
+        );
+        hourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerHour.setAdapter(hourAdapter);
     }
 
-    private void setUpListeners() {
-        // regulamin odblokowuje przycisk
-        cbTerms.setOnCheckedChangeListener((buttonView, isChecked) ->
-                btnSubmit.setEnabled(isChecked));
+    private void setupListeners() {
+        binding.btnDate.setOnClickListener(v -> showDatePicker());
 
-        btnBirthDate.setOnClickListener(v -> showDatePicker());
+        binding.rgType.setOnCheckedChangeListener((group, checkedId) ->
+                updateAddressVisibility(checkedId == R.id.rbStationary)
+        );
 
-        btnSubmit.setOnClickListener(v -> {
+        binding.btnReserve.setOnClickListener(v -> {
             if (validateForm()) {
-                askForConfirmation();
+                showConfirmationDialog();
             }
-        });
-
-        // SeekBar – trzy metody → klasa anonimowa (nie da się lambdy)
-        sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvLevelValue.setText(String.valueOf(progress));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
         });
     }
+
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
@@ -98,84 +65,120 @@ public class MainActivity extends AppCompatActivity {
         DatePickerDialog dialog = new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    birthDate = String.format(Locale.US, "%04d-%02d-%02d",
-                            year, month + 1, dayOfMonth);
-                    btnBirthDate.setText(birthDate);
+                    selectedDate = String.format("%02d.%02d.%04d", dayOfMonth, month + 1, year);
+                    binding.tvSelectedDate.setText(selectedDate);
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-
-        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
         dialog.show();
     }
 
+    private void updateAddressVisibility(boolean show) {
+        binding.tilAddress.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (!show) {
+            if (binding.etAddress.getText() != null) {
+                binding.etAddress.getText().clear();
+            }
+            binding.etAddress.setError(null);
+        }
+    }
+
     private boolean validateForm() {
-        String name = etName.getText().toString().trim();
-        if (name.isEmpty()) {
-            etName.setError(getString(R.string.error_name));
-            etName.requestFocus();
+
+
+        if (binding.spinnerService.getSelectedItemPosition() == 0) {
+            Toast.makeText(this, "Wybierz usługę", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        String email = etEmail.getText().toString().trim();
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError(getString(R.string.error_email));
-            etEmail.requestFocus();
+        if (selectedDate.isEmpty()) {
+            Toast.makeText(this, "Wybierz datę wizyty", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (birthDate.isEmpty()) {
-            Toast.makeText(this, R.string.error_date, Toast.LENGTH_SHORT).show();
+        if (binding.spinnerHour.getSelectedItemPosition() == 0) {
+            Toast.makeText(this, "Wybierz godzinę", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (spCourse.getSelectedItemPosition() == 0) {
-            Toast.makeText(this, R.string.error_course, Toast.LENGTH_SHORT).show();
+        if (binding.etName.getText() == null || binding.etName.getText().toString().trim().isEmpty()) {
+            binding.etName.setError("Podaj imię i nazwisko");
+            binding.etName.requestFocus();
             return false;
+        } else {
+            binding.etName.setError(null);
         }
 
-        if (rgMode.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(this, R.string.error_mode, Toast.LENGTH_SHORT).show();
+        String phone = binding.etPhone.getText().toString().trim();
+        if (phone.length() < 9) {
+            binding.etPhone.setError("Podaj poprawny numer telefonu");
+            binding.etPhone.requestFocus();
+            return false;
+        } else {
+            binding.etPhone.setError(null);
+        }
+
+        if (binding.rbStationary.isChecked() &&
+                (binding.etAddress.getText() == null || binding.etAddress.getText().toString().trim().isEmpty())) {
+            binding.etAddress.setError("Podaj adres");
+            binding.etAddress.requestFocus();
+            return false;
+        } else {
+            binding.etAddress.setError(null);
+        }
+
+        if (!binding.cbConsent.isChecked()) {
+            Toast.makeText(this, "Musisz wyrazić zgodę", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         return true;
     }
 
-    private void askForConfirmation() {
+    private void showConfirmationDialog() {
+        String service = binding.spinnerService.getSelectedItem().toString();
+        String hour = binding.spinnerHour.getSelectedItem().toString();
+        String name = binding.etName.getText().toString();
+        String type = binding.rbStationary.isChecked() ? "Stacjonarna" : "Online";
+
         new AlertDialog.Builder(this)
-                .setTitle(R.string.confirm_title)
-                .setMessage(R.string.confirm_message)
-                .setPositiveButton(R.string.yes, (dialog, which) -> submitForm())
-                .setNegativeButton(R.string.no, null)
+                .setTitle("Potwierdzenie rezerwacji")
+                .setMessage(
+                        "Czy na pewno chcesz zarezerwować?\n\n" +
+                                "Usługa: " + service + "\n" +
+                                "Data: " + selectedDate + "  " + hour + "\n" +
+                                "Pacjent: " + name + "\n" +
+                                "Rodzaj: " + type
+                )
+                .setPositiveButton("Tak, rezerwuję", (dialog, which) -> performReservation())
+                .setNegativeButton("Anuluj", null)
                 .show();
     }
 
-    private void submitForm() {
-        tvSummary.setText(buildSummary());
+    private void performReservation() {
+        StringBuilder summary = new StringBuilder();
+        summary.append("Zarezerwowano!\n");
+        summary.append("Usługa: ").append(binding.spinnerService.getSelectedItem()).append("\n");
+        summary.append("Data: ").append(selectedDate).append(" ").append(binding.spinnerHour.getSelectedItem()).append("\n");
+        summary.append("Pacjent: ").append(binding.etName.getText()).append("\n");
+        summary.append("Tel: ").append(binding.etPhone.getText()).append("\n");
+        summary.append("Rodzaj: ").append(binding.rbStationary.isChecked() ? "Stacjonarna" : "Online").append("\n");
 
-        Snackbar.make(findViewById(R.id.main), R.string.sent, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, v -> tvSummary.setText(""))
+        if (binding.rbStationary.isChecked()) {
+            summary.append("Adres: ").append(binding.etAddress.getText()).append("\n");
+        }
+
+        summary.append("SMS: ").append(binding.switchSms.isChecked() ? "Tak" : "Nie");
+
+        binding.tvSummary.setText(summary.toString());
+
+        Snackbar.make(binding.getRoot(), "Wizyta zarezerwowana!", Snackbar.LENGTH_LONG)
+                .setAction("Cofnij", v -> {
+                    binding.tvSummary.setText("");
+                    Toast.makeText(this, "Rezerwacja cofnięta", Toast.LENGTH_SHORT).show();
+                })
                 .show();
-    }
-
-    private String buildSummary() {
-        String mode = rgMode.getCheckedRadioButtonId() == R.id.rbOnsite
-                ? getString(R.string.mode_onsite)
-                : getString(R.string.mode_remote);
-
-        String newsletter = swNewsletter.isChecked()
-                ? getString(R.string.yes_short)
-                : getString(R.string.no_short);
-
-        return getString(R.string.summary_format,
-                etName.getText().toString().trim(),
-                etEmail.getText().toString().trim(),
-                birthDate,
-                spCourse.getSelectedItem().toString(),
-                mode,
-                sbLevel.getProgress(),
-                newsletter);
     }
 }
