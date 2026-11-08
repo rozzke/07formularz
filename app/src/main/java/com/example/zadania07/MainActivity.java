@@ -1,5 +1,6 @@
 package com.example.zadania07;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText etName, etEmail;
@@ -23,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvLevelValue, tvSummary;
     private MaterialSwitch swNewsletter;
     private CheckBox cbTerms;
+
+    private String birthDate = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,5 +46,71 @@ public class MainActivity extends AppCompatActivity {
         tvSummary = findViewById(R.id.tvSummary);
         swNewsletter = findViewById(R.id.swNewsletter);
         cbTerms = findViewById(R.id.cbTerms);
+
+        setUpListeners();
+        tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
+    }
+
+    private void setUpListeners() {
+        // regulamin odblokowuje przycisk
+        cbTerms.setOnCheckedChangeListener((buttonView, isChecked) ->
+                btnSubmit.setEnabled(isChecked));
+
+        btnBirthDate.setOnClickListener(v -> showDatePicker());
+
+        btnSubmit.setOnClickListener(v -> showSummary());
+
+        // SeekBar – trzy metody → klasa anonimowa
+        sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                tvLevelValue.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+    }
+
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    birthDate = String.format(Locale.US, "%04d-%02d-%02d",
+                            year, month + 1, dayOfMonth);
+                    btnBirthDate.setText(birthDate);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        dialog.show();
+    }
+
+    private void showSummary() {
+        String mode = rgMode.getCheckedRadioButtonId() == R.id.rbOnsite
+                ? getString(R.string.mode_onsite)
+                : getString(R.string.mode_remote);
+
+        String newsletter = swNewsletter.isChecked()
+                ? getString(R.string.yes_short)
+                : getString(R.string.no_short);
+
+        String summary = getString(R.string.summary_format,
+                etName.getText().toString().trim(),
+                etEmail.getText().toString().trim(),
+                birthDate.isEmpty() ? "brak" : birthDate,
+                "brak",                     // kurs jeszcze nieobsługiwany
+                mode,
+                sbLevel.getProgress(),
+                newsletter);
+
+        tvSummary.setText(summary);
     }
 }
