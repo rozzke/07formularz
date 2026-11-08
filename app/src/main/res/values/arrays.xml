@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="services">
+        <item>Wybierz usługę...</item>
+        <item>Konsultacja lekarska</item>
+        <item>Badanie kontrolne</item>
+        <item>Szczepienie</item>
+        <item>Zabieg ambulatoryjny</item>
+        <item>Konsultacja online</item>
+    </string-array>
+
+    <string-array name="hours">
+        <item>Wybierz godzinę...</item>
+        <item>08:00</item>
+        <item>09:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+        <item>13:00</item>
+        <item>14:00</item>
+        <item>15:00</item>
+        <item>16:00</item>
+    </string-array>
+</resources>
