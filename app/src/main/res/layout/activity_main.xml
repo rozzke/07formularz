@@ -1,167 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".MainActivity">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvHeader"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#008080"
-            android:padding="12dp"
-            android:text="@string/header"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp" />
+            android:text="Rezerwacja wizyty"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
+        <!-- 1. Spinner – usługa -->
         <TextView
-            android:id="@+id/tvLabelName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/label_name" />
-
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_name"
-            android:inputType="textPersonName"
-            android:maxLines="1" />
-
-        <TextView
-            android:id="@+id/tvLabelEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_email" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_email"
-            android:inputType="textEmailAddress"
-            android:maxLines="1" />
-
-        <TextView
-            android:id="@+id/tvLabelBirthDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_birth_date" />
-
-        <Button
-            android:id="@+id/btnBirthDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_pick_date" />
-
-        <TextView
-            android:id="@+id/tvLabelCourse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_course" />
-
+            android:text="Usługa" />
         <Spinner
-            android:id="@+id/spCourse"
+            android:id="@+id/spinnerService"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
 
+        <!-- 2. Data (Button + TextView) -->
         <TextView
-            android:id="@+id/tvLabelMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_mode" />
-
-        <RadioGroup
-            android:id="@+id/rgMode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rbOnsite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/mode_onsite" />
-
-            <RadioButton
-                android:id="@+id/rbRemote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/mode_remote" />
-        </RadioGroup>
-
+            android:text="Data wizyty" />
         <LinearLayout
-            android:id="@+id/rowLevel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+            <Button
+                android:id="@+id/btnDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wybierz datę" />
             <TextView
-                android:id="@+id/tvLabelLevel"
+                android:id="@+id/tvSelectedDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/label_level" />
-
-            <TextView
-                android:id="@+id/tvLevelValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                tools:text="5" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:text="Nie wybrano"
+                android:textSize="16sp" />
         </LinearLayout>
 
-        <SeekBar
-            android:id="@+id/sbLevel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="10"
-            android:progress="0" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swNewsletter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/newsletter" />
-
-        <CheckBox
-            android:id="@+id/cbTerms"
+        <!-- 3. Spinner – godzina -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/terms" />
+            android:text="Godzina" />
+        <Spinner
+            android:id="@+id/spinnerHour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
 
-        <Button
-            android:id="@+id/btnSubmit"
+        <!-- 4. EditText – imię -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Imię i nazwisko">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 5. EditText – telefon -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Telefon">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 6. RadioGroup – rodzaj wizyty (zależność) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Rodzaj wizyty" />
+        <RadioGroup
+            android:id="@+id/rgType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/rbStationary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stacjonarna"
+                android:checked="true" />
+            <RadioButton
+                android:id="@+id/rbOnline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:layout_marginStart="16dp" />
+        </RadioGroup>
+
+        <!-- Pole zależne – widoczne tylko przy wizycie stacjonarnej -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Adres (ulica, nr)">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 7. Switch -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchSms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:enabled="false"
-            android:text="@string/btn_submit" />
+            android:text="Chcę powiadomienie SMS" />
+
+        <!-- 8. CheckBox -->
+        <CheckBox
+            android:id="@+id/cbConsent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Wyrażam zgodę na przetwarzanie danych" />
+
+        <Button
+            android:id="@+id/btnReserve"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Zarezerwuj wizytę" />
 
         <TextView
             android:id="@+id/tvSummary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            tools:text="Jan Kowalski\njan@przyklad.pl" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 </ScrollView>
