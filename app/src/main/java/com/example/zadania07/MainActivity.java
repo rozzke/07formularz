@@ -13,9 +13,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(v -> {
             if (validateForm()) {
-                showSummary();
+                askForConfirmation();
             }
         });
 
@@ -141,7 +143,24 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showSummary() {
+    private void askForConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirm_title)
+                .setMessage(R.string.confirm_message)
+                .setPositiveButton(R.string.yes, (dialog, which) -> submitForm())
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
+
+    private void submitForm() {
+        tvSummary.setText(buildSummary());
+
+        Snackbar.make(findViewById(R.id.main), R.string.sent, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, v -> tvSummary.setText(""))
+                .show();
+    }
+
+    private String buildSummary() {
         String mode = rgMode.getCheckedRadioButtonId() == R.id.rbOnsite
                 ? getString(R.string.mode_onsite)
                 : getString(R.string.mode_remote);
@@ -150,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 ? getString(R.string.yes_short)
                 : getString(R.string.no_short);
 
-        String summary = getString(R.string.summary_format,
+        return getString(R.string.summary_format,
                 etName.getText().toString().trim(),
                 etEmail.getText().toString().trim(),
                 birthDate,
@@ -158,7 +177,5 @@ public class MainActivity extends AppCompatActivity {
                 mode,
                 sbLevel.getProgress(),
                 newsletter);
-
-        tvSummary.setText(summary);
     }
 }
